@@ -1,0 +1,55 @@
+# Docker Build & Run
+services:
+  db:
+    image: mysql:8.0
+    container_name: bankapp_db
+    environment:
+      MYSQL_ROOT_PASSWORD: Test@123
+      MYSQL_DATABASE: bankappdb
+    healthcheck:
+      test: ["CMD", "mysqladmin","ping", "-h", "localhost", "-u", "root", "-pTest@123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - ai-bankapp
+
+  bankapp:
+    build: .
+    container_name: bankapp
+    ports:
+      - "8080:8080"
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: bankappdb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Test@123
+      OLLAMA_URL: http://ollama:11434
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ai-bankapp
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - ai-bankapp
+
+# Docker Volume Create
+volumes:
+  mysql-data:
+  ollama_data:
+
+# Docker Network Create
+networks:
+  ai-bankapp:
+    driver: bridge
