@@ -1,33 +1,46 @@
-# BUILD STAGE - BASE IMAGE
+# ====================Build Stage======================
+
+# Base Image
 FROM eclipse-temurin:21-jdk-jammy AS builder
 
-# WORKDIR
+# Set Working Directory
 WORKDIR /app
 
-# COPY ONLY NECESSARY FILES
+# Copy Dependency-related Files
 COPY pom.xml .
 COPY mvnw .
 COPY .mvn .mvn
 
-# COPY SOURCE CODE 
+# Copy Code
 COPY src src
 
-# BUILD THE JAR
+# Build Jar
 RUN chmod +x mvnw && ./mvnw clean package -DskipTests
 
-# RUNTIME STAGE
+# =================== Runtime Stage=====================
+
+# Base Image
 FROM eclipse-temurin:21-jre-jammy
 
-# WORKDIR
+# Set Working Directory
 WORKDIR /app
 
-# COPY
+# Create Non-root User
+RUN useradd -m appuser
+
+# Copy Jar
 COPY --from=builder /app/target/*.jar app.jar
 
-# EXPOSE PORT
+# Change Ownership
+RUN chown appuser:appuser app.jar
+
+# Switch to Non-root User
+USER appuser
+
+# Expose Port
 EXPOSE 8080
 
-# RUN & SERVE APPLICATION
+# Run & Serve Application
 CMD ["java","-jar","app.jar"]
 
 
