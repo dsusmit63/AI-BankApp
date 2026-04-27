@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: bankapp-service
+  namespace: bankapp-ns
+spec:
+  type: NodePort
+  selector:
+    app: bankapp
+  ports:
+    - port: 8080
+      targetPort: 8080
+

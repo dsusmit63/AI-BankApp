@@ -1,0 +1,12 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: bankapp-configmap
+  namespace: bankapp-ns
+data:
+  MYSQL_DATABASE: bankappdb
+  MYSQL_USER: bankappuser
+  MYSQL_HOST: mysql-service.bankapp-ns
+  MYSQL_PORT: "3306"
+  OLLAMA_URL: "http://ollama-service:11434"
