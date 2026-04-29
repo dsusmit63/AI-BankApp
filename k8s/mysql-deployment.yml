@@ -5,12 +5,13 @@ metadata:
   name: mysql-deployment
   namespace: bankapp-ns
   labels:
-    app: mysql-deployment
+    app: mysql
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: mysql
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -42,6 +43,13 @@ spec:
                 secretKeyRef:
                   name: bankapp-secrets
                   key: MYSQL_ROOT_PASSWORD
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "260m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
           volumeMounts:
             - name: mysql-storage
               mountPath: /var/lib/mysql
@@ -54,6 +62,17 @@ spec:
                 - 127.0.0.1
             initialDelaySeconds: 15
             periodSeconds: 10
+            failureThreshold: 10
+          livenessProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - -h
+                - 127.0.0.1
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 5
       volumes:
         - name: mysql-storage
           persistentVolumeClaim:

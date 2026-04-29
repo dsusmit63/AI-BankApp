@@ -13,3 +13,19 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: /mnt/data/mysqldata
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: ollama-pv
+  namespace: bankapp-ns
+  labels:
+    app: ollama-pv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /mnt/data/ollama
