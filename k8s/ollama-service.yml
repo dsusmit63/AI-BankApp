@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: ollama-service
-  namespace: bankapp
+  namespace: bankapp-ns
 spec:
   selector:
     app: ollama
